@@ -32,7 +32,7 @@
   [["-h" "--help" "Print the available commands and its options"]
    [nil "--version" "Print stub version"]
 
-   ["-cp" "--classpath CLASSPATH" "The classpath string used to search for libraries to then generate the stubs."
+   ["-c" "--classpath CLASSPATH" "The classpath string used to search for libraries to then generate the stubs."
     :id :classpath
     :validate [string? "Specify a valid classpath string after --classpath"]]
 
