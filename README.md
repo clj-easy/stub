@@ -12,6 +12,15 @@ To generate stubs you need to pass the `classpath` and at least one namespace fr
 You can specify a optional `output-dir`, otherwise the `stubs` folder will be used.
 For more details check `stub --help`.
 
+After running sucessfully, a hierarchy of files and folders with all the stubs should be available with custom metadata. Example:
+
+`stubs/foo/bar.clj`
+```clojure
+(in-ns 'foo.bar)
+(defn ^{:clj-easy/stub true, :line 16, :column 1, :file "foo/bar.clj"} something ([]) ([a b]))
+(defn ^{:clj-easy/stub true, :line 18, :column 1, :file "foo/bar.clj"} other ([]))
+```
+
 ### CLI
 
 `stub --classpath ".../clojure.jar:/foo/bar.jar" --namespaces foo.bar`
