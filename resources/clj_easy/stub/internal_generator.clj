@@ -14,7 +14,5 @@
        (map ns-publics)
        (mapcat vals)
        (map (comp sanitize-meta meta))
-       ;; (filter #(and (= 'clj-kondo.impl.toolsreader.v1v2v2.clojure.tools.reader.reader-types (:ns %))
-       ;;               (= 'Reader (:name %))))
        pr-str
        println))
