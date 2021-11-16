@@ -39,7 +39,6 @@
    ["-n" "--namespaces NS" "Namespaces to require to later then generate the stubs. This flag accepts multiple values"
     :id :namespaces
     :default []
-    :parse-fn symbol
     :multi true
     :update-fn conj]
 
