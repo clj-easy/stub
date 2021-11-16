@@ -1,6 +1,6 @@
 # stub
 
-A tool for generating stubs for open and closed source libraries.
+_A tool for generating stubs for open and closed source libraries_
 
 ## Instalation
 
@@ -21,6 +21,14 @@ For more details check `stub --help`.
 ### API
 
 TODO
+
+## How does it work
+
+This tool first create a temporary file with a custom clojure code, then shell out a java process with the specified classpath calling the code from the created temporary file which should get all necessary metadata and then finish, which stub should then create all files from that metadata.
+
+## Develop
+
+Run `clj -M:run generate -c "<your-classpath> -n some.entrypoint-ns"`
 
 ## License
 
