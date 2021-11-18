@@ -37,7 +37,7 @@ This tool first create a temporary file with a custom clojure code, then shell o
 
 ## Develop
 
-Run `clj -M:run generate -c "<your-classpath> -n some.entrypoint-ns"`
+Run `clj -M:run generate --classpath "<your-classpath>" --namespaces some.entrypoint-ns`
 
 ## Build
 
