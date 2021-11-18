@@ -1,8 +1,11 @@
 (ns build
-  (:require [clojure.tools.build.api :as b]))
+  (:require
+   [clojure.java.io :as io]
+   [clojure.string :as string]
+   [clojure.tools.build.api :as b]))
 
 (def lib 'clj-easy/stub)
-(def version (format "0.1.%s" (b/git-count-revs nil)))
+(def version (string/trim (slurp (io/resource "STUB_VERSION"))))
 (def class-dir "target/classes")
 (def basis (b/create-basis {:project "deps.edn"}))
 (def uber-file (format "target/%s-%s-standalone.jar" (name lib) version))

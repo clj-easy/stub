@@ -10,7 +10,7 @@
 (set! *warn-on-reflection* true)
 
 (defn ^:private version []
-  (->> [(str "stub TODO")]
+  (->> [(str "stub v" (string/trim (slurp (io/resource "STUB_VERSION"))))]
        (string/join \newline)))
 
 (defn ^:private help [options-summary]
