@@ -65,8 +65,14 @@
         stubs-by-filename))
 
 ;; TODO Create a better API usage, probably in some other ns
-(defn generate! [{:keys [classpath namespaces output-dir]
-                  :or {output-dir (io/file "stubs")}}]
+(defn generate!
+  "Generate stubs for the given `classpath`, requiring `namespaces`
+  and saving the namespaces hierarchy to `output-dir`."
+  [{:keys [classpath namespaces output-dir]
+    :or {output-dir (io/file "stubs")}}]
+  {:pre [(instance? File output-dir)
+         (string? classpath)
+         (seq namespaces)]}
   (let [script-tmp-file ^File (tmp-file)
         _ (spit script-tmp-file (internal-generator-code))
         {:keys [out err exit]} (apply sh
