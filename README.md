@@ -39,6 +39,20 @@ This tool first create a temporary file with a custom clojure code, then shell o
 
 Run `clj -M:run generate -c "<your-classpath> -n some.entrypoint-ns"`
 
+## Build
+
+JVM
+
+`clj -T:build uber`
+
+GraalVM native image
+
+`clj -T:build native`
+
+## Deploy
+
+`clj -T:build deploy`
+
 ## License
 
 Copyright © 2021 clj-easy maintainers

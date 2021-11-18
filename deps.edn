@@ -13,9 +13,13 @@
    :exec-fn cognitect.test-runner.api/test}
 
   :build
-  {:deps {io.github.clojure/tools.build {:tag "v0.5.1" :sha "21da7d4"}
+  {:extra-paths ["resources"]
+   :deps {io.github.clojure/tools.build {:tag "v0.5.1" :sha "21da7d4"}
           slipset/deps-deploy {:mvn/version "0.2.0"}}
    :ns-default build}
+
+  :native
+  {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
 
   :kaocha
   {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.887"}}}}}

@@ -27,3 +27,6 @@
 /target
 
 stubs
+*.build_artifacts.txt
+reports/
+/stub

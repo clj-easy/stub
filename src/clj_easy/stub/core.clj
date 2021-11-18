@@ -18,7 +18,6 @@
 
 (defn ^:private meta->stub
   [{:keys [ns name doc arglists file line column] :as meta}]
-  (println meta)
   (let [function-macro (if arglists
                          "defn"
                          "def")
