@@ -18,6 +18,10 @@
           slipset/deps-deploy {:mvn/version "0.2.0"}}
    :ns-default build}
 
+  :clojure-lsp
+  {:replace-deps {com.github.clojure-lsp/clojure-lsp {:mvn/version "2021.11.16-16.52.14"}}
+   :main-opts ["-m" "clojure-lsp.main"]}
+
   :native
   {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
 

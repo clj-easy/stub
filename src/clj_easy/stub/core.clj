@@ -17,7 +17,7 @@
   (File/createTempFile "clj-easy-stub." ".clj"))
 
 (defn ^:private meta->stub
-  [{:keys [ns name doc arglists file line column] :as meta}]
+  [{:keys [ns name doc arglists file line column]}]
   (let [function-macro (if arglists
                          "defn"
                          "def")
