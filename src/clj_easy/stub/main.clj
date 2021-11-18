@@ -43,7 +43,7 @@
     :update-fn conj]
 
    ["-o" "--output-dir DIR" "The directory to spit out the generated stubs."
-    :id :output
+    :id :output-dir
     :parse-fn io/file
     :validate [#(-> % io/file .exists) "Specify a valid directory path after --output-dir"]]])
 
