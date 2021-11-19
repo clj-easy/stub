@@ -12,7 +12,7 @@ To generate stubs you need to pass the `classpath` and at least one namespace fr
 You can specify a optional `output-dir`, otherwise the `stubs` folder will be used.
 For more details check `stub --help`.
 
-After running sucessfully, a hierarchy of files and folders with all the stubs should be available with custom metadata. Example:
+After running successfully, a hierarchy of files and folders with all the stubs should be available with custom metadata. Example:
 
 `stubs/foo/bar.clj`
 ```clojure
@@ -29,7 +29,7 @@ After running sucessfully, a hierarchy of files and folders with all the stubs s
 
 ### API
 
-TODO
+For now the only entrypoint available is `clj-easy.stub.core/generate!`.
 
 ## How does it work
 
