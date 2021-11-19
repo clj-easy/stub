@@ -18,9 +18,9 @@
 
 (defn ^:private meta->stub
   [{:keys [ns name doc arglists file line column]}]
-  (let [function-macro (if arglists
-                         "defn"
-                         "def")
+  (let [definition-macro (if arglists
+                           "defn"
+                           "def")
         file-ext (if file (last (string/split file #"\.")) "clj")
         metadata (utils/assoc-some
                   {:clj-easy/stub true}
@@ -32,7 +32,7 @@
                    (string/replace "." (System/getProperty "file.separator"))
                    (string/replace "-" "_")
                    (str "." file-ext))
-     :declaration (str "(" function-macro (str " ^" metadata) " " name
+     :declaration (str "(" definition-macro (str " ^" metadata) " " name
                        (if doc (str " \"" doc "\"") "")
                        (if arglists
                          (->> arglists
@@ -64,29 +64,46 @@
             (spit (.getAbsolutePath output-file) content)))
         stubs-by-filename))
 
-;; TODO Create a better API usage, probably in some other ns
+(defn ^:private create-script-tmp-file! []
+  (let [script-tmp-file ^File (tmp-file)]
+    (spit script-tmp-file (internal-generator-code))
+    script-tmp-file))
+
 (defn generate!
   "Generate stubs for the given `classpath`, requiring `namespaces`
-  and saving the namespaces hierarchy to `output-dir`."
-  [{:keys [classpath namespaces output-dir]
-    :or {output-dir (io/file "stubs")}}]
+  and saving the namespaces hierarchy into `output-dir`.
+  This function spawns a clojure program using the provided or default `java-command`.
+  If `dry?` is truthy, return the stubs on the result map without creating the file hierarchy.
+
+  Return a map with:
+    `result-code` the status code of the result. Anything different from `0` means an error.
+    `message` A message about the result.
+    `stubs` The generated stubs if `dry?` flag is truthy."
+  [{:keys [classpath namespaces output-dir java-command dry?]
+    :or {output-dir (io/file "stubs")
+         java-command "java"}}]
   {:pre [(instance? File output-dir)
          (string? classpath)
+         (string? java-command)
          (seq namespaces)]}
-  (let [script-tmp-file ^File (tmp-file)
-        _ (spit script-tmp-file (internal-generator-code))
+  (let [script-tmp-file ^File (create-script-tmp-file!)
         {:keys [out err exit]} (apply sh
-                                      "java" "-cp" classpath
+                                      java-command "-cp" classpath
                                       "clojure.main"
                                       (.getAbsolutePath script-tmp-file)
                                       namespaces)]
     (if (= exit 0)
-      (let [metas (edn/read-string out)]
-        (->> metas
-             metas->stubs-by-filename
-             (spit-stubs! output-dir))
-        {:result-code 0
-         :message (str "Stubs generated sucessfully on " (.getAbsolutePath ^File output-dir))})
+      (let [metas (edn/read-string out)
+            stubs-by-filename (metas->stubs-by-filename metas)]
+        (if dry?
+          {:result-code 0
+           :stubs stubs-by-filename
+           :message (str "Stubs generated sucessfully")}
+          (do
+            (spit-stubs! output-dir stubs-by-filename)
+            {:result-code 0
+             :stubs stubs-by-filename
+             :message (str "Stubs generated and persisted sucessfully")})))
       {:result-code exit
        :message (or (and (not (string/blank? err))
                          err)
