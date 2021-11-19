@@ -32,7 +32,7 @@ jobs:
       - name: Upload jar
         uses: actions/upload-artifact@v2
         with:
-          path: target/stub-${{ steps.latest-tag.outputs.tag}-standalone.jar
+          path: target/stub-${{ steps.latest-tag.outputs.tag}}-standalone.jar
           name: stub.jar
 
   linux-amd64:
