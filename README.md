@@ -1,3 +1,6 @@
+[![Clojars Project](https://img.shields.io/clojars/v/com.github.clj-easy/stub.svg)](https://clojars.org/com.github.clj-easy/stub)
+[![Slack community](https://img.shields.io/badge/Slack-chat-blue?style=flat-square)](https://clojurians.slack.com/archives/C02DQFVS0MC)
+
 # stub
 
 _A tool for generating stubs for open and closed source libraries_
