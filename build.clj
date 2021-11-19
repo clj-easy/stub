@@ -38,10 +38,12 @@
            :basis (b/create-basis (update basis :aliases concat (:extra-aliases opts)))}))
 
 (defn native [opts]
-  (uber (merge opts {:extra-aliases [:native]}))
   (if-let [graal-home (System/getenv "GRAALVM_HOME")]
-    (let [command (->> [(str (io/file graal-home "bin" "native-image"))
-                        "-jar" uber-file
+    (let [jar (or (System/getenv "STUB_JAR")
+                  (do (uber (merge opts {:extra-aliases [:native]}))
+                      uber-file))
+          command (->> [(str (io/file graal-home "bin" "native-image"))
+                        "-jar" jar
                         "-H:+ReportExceptionStackTraces"
                         "--verbose"
                         "--no-fallback"
@@ -61,24 +63,24 @@
     (spit file $)))
 
 (defn tag [{:keys [version]}]
-  {:pre [(keyword? version)]}
+  {:pre [(string? version)]}
   (b/process {:command-args ["git" "fetch" "origin"]})
   (b/process {:command-args ["git" "pull" "origin" "HEAD"]})
   (replace-in-file "pom.xml"
                    (str "<version>" current-version "</version>")
-                   (str "<version>" (name version) "</version>"))
+                   (str "<version>" version "</version>"))
   (replace-in-file "pom.xml"
                    (str "<tag>v" current-version "</tag>")
-                   (str "<tag>v" (name version) "</tag>"))
+                   (str "<tag>v" version "</tag>"))
   (replace-in-file "CHANGELOG.md"
                    #"## Unreleased"
                    (format "## Unreleased\n\n## %s" (name version)))
   (replace-in-file "resources/STUB_VERSION"
                    current-version
-                   (name version))
+                   version)
   (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/STUB_VERSION"]})
-  (b/process {:command-args ["git" "commit" "-m" (str "\"Release: " (name version) "\"")]})
-  (b/process {:command-args ["git" "tag" (name version)]})
+  (b/process {:command-args ["git" "commit" "-m" (str "\"Release: " version "\"")]})
+  (b/process {:command-args ["git" "tag" (str "v" version)]})
   (b/process {:command-args ["git" "push" "origin" "HEAD"]})
   (b/process {:command-args ["git" "push" "origin" "HEAD" "--tags"]}))
 

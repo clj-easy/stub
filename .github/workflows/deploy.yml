@@ -1,0 +1,290 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-jvm:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Build JVM jar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Prepare java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Install Clojure
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: '1.10.3.1013'
+
+      - name: Get latest tag
+        id: latest-tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+
+      - name: Generate uberjar
+        run: clojure -T:build uber
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v2
+        with:
+          path: target/stub-${{ steps.latest-tag.outputs.tag}-standalone.jar
+          name: stub.jar
+
+  linux-amd64:
+    name: Build native linux amd64 binary
+    needs: build-jvm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: stub.jar
+
+      - name: Install Clojure
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: '1.10.3.1013'
+
+      - name: Install GraalVM
+        uses: DeLaGuardo/setup-graalvm@master
+        with:
+          graalvm-version: 21.3.0.java11
+
+      - name: Install native-image component
+        run: |
+          gu install native-image
+
+      - name: Build Linux native image
+        env:
+          STUB_JAR: stub.jar
+          STUB_XMX: "-J-Xmx6g"
+        run: clojure -T:build native
+
+      - name: Zip binary
+        run: zip stub-native-linux-amd64.zip stub
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: stub-native-linux-amd64.zip
+          name: stub-native-linux-amd64.zip
+
+  linux-amd64-static:
+    name: Build native linux amd64 static binary
+    needs: build-jvm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: stub.jar
+
+      - name: Install Clojure
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: '1.10.3.1013'
+
+      - name: Install GraalVM
+        uses: DeLaGuardo/setup-graalvm@master
+        with:
+          graalvm-version: 21.3.0.java11
+
+      - name: Install native-image component
+        run: |
+          gu install native-image
+
+      - name: Build Linux native image
+        env:
+          STUB_JAR: stub.jar
+          STUB_XMX: "-J-Xmx6g"
+          STUB_STATIC: true
+        run: clojure -T:build native
+
+      - name: Zip binary
+        run: zip stub-native-static-linux-amd64.zip stub
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: stub-native-static-linux-amd64.zip
+          name: stub-native-static-linux-amd64.zip
+
+  macos:
+    name: Build native MacOS amd64 binary
+    needs: build-jvm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: stub.jar
+
+      - name: Install Clojure
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: '1.10.3.1013'
+
+      - name: Install GraalVM
+        uses: DeLaGuardo/setup-graalvm@master
+        with:
+          graalvm-version: 21.3.0.java11
+
+      - name: Install native-image component
+        run: |
+          gu install native-image
+
+      - name: Build MacOS native image
+        env:
+          STUB_JAR: stub.jar
+          STUB_XMX: "-J-Xmx6g"
+        run: clojure -T:build native
+
+      - name: Zip binary
+        run: zip stub-native-macos-amd64.zip stub
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: stub-native-macos-amd64.zip
+          name: stub-native-macos-amd64.zip
+
+  windows:
+    name: Build native Windows binary
+    needs: build-jvm
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: stub.jar
+
+      - name: Prepare java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Install Clojure
+        run: |
+          iwr -useb download.clojure.org/install/win-install-1.10.3.1013.ps1 | iex
+
+     - name: Install MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install GraalVM
+        uses: DeLaGuardo/setup-graalvm@master
+        with:
+          graalvm-version: 21.3.0.java11
+
+      - name: Install native-image component
+        run: |
+          gu.cmd install native-image
+
+      - name: Build Windows native image
+        env:
+          STUB_JAR: stub.jar
+          STUB_XMX: "-J-Xmx7g"
+        run: clojure -T:build native
+
+      - name: Zip binary
+        run: |
+          jar -cMf stub-native-windows-amd64.zip stub.exe
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: stub-native-windows-amd64.zip
+          name: stub-native-windows-amd64.zip
+
+  deploy-clojars:
+    needs: [build-jvm, linux-amd64, linux-amd64-static, macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: jlesquembre/clojars-publish-action@0.4
+        env:
+          USE_GIT_REF: false
+          CLOJARS_USERNAME: borkdude
+          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_ORG_TOKEN }}
+
+  release:
+    name: Create Release
+    needs: [deploy-clojars]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get latest tag
+        id: latest-tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          tag_name: ${{ steps.latest-tag.outputs.tag}}
+
+  upload-to-release:
+    name: Upload artifacts to release
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get latest tag
+        id: latest-tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+
+      - uses: actions/download-artifact@v2
+
+      - name: Upload jar
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub.jar/stub.jar
+          asset_name: stub.jar
+          tag: ${{ steps.latest-tag.outputs.tag}}
+
+      - name: Upload JVM Windows embedded jar
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub/stub
+          asset_name: stub.bat
+          tag: ${{ steps.latest-tag.outputs.tag}}
+
+      - name: Upload Linux amd64 native binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub-native-linux-amd64.zip/stub-native-linux-amd64.zip
+          asset_name: stub-native-linux-amd64.zip
+          tag: ${{ steps.latest-tag.outputs.tag }}
+
+      - name: Upload static Linux amd64 native binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub-native-static-linux-amd64.zip/stub-native-static-linux-amd64.zip
+          asset_name: stub-native-static-linux-amd64.zip
+          tag: ${{ steps.latest-tag.outputs.tag }}
+
+      - name: Upload MacOS native binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub-native-macos-amd64.zip/stub-native-macos-amd64.zip
+          asset_name: stub-native-macos-amd64.zip
+          tag: ${{ steps.latest-tag.outputs.tag}}
+
+      - name: Upload Windows native binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CLJ_EASY_BOT_TOKEN }}
+          file: stub-native-windows-amd64.zip/stub-native-windows-amd64.zip
+          asset_name: stub-native-windows-amd64.zip
+          tag: ${{ steps.latest-tag.outputs.tag}}
