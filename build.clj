@@ -5,11 +5,11 @@
    [clojure.tools.build.api :as b]))
 
 (def lib 'clj-easy/stub)
-(def version (string/trim (slurp (io/resource "STUB_VERSION"))))
+(def current-version (string/trim (slurp (io/resource "STUB_VERSION"))))
 (def class-dir "target/classes")
 (def basis {:project "deps.edn"})
-(def uber-file (format "target/%s-%s-standalone.jar" (name lib) version))
-(def jar-file (format "target/%s-%s.jar" (name lib) version))
+(def uber-file (format "target/%s-%s-standalone.jar" (name lib) current-version))
+(def jar-file (format "target/%s-%s.jar" (name lib) current-version))
 
 (defn clean [_]
   (b/delete {:path "target"}))
@@ -17,7 +17,7 @@
 (defn jar [opts]
   (b/write-pom {:class-dir class-dir
                 :lib lib
-                :version version
+                :version current-version
                 :basis (b/create-basis (update basis :aliases concat (:extra-aliases opts)))
                 :src-dirs ["src"]})
   (b/copy-dir {:src-dirs ["src" "resources"]
@@ -55,7 +55,34 @@
       (System/exit exit))
     (println "Set GRAALVM_HOME env")))
 
-(defn deploy [opts]
+(defn ^:private replace-in-file [file regex content]
+  (as-> (slurp file) $
+    (string/replace $ regex content)
+    (spit file $)))
+
+(defn tag [{:keys [version]}]
+  {:pre [(keyword? version)]}
+  (b/process {:command-args ["git" "fetch" "origin"]})
+  (b/process {:command-args ["git" "pull" "origin" "HEAD"]})
+  (replace-in-file "pom.xml"
+                   (str "<version>" current-version "</version>")
+                   (str "<version>" (name version) "</version>"))
+  (replace-in-file "pom.xml"
+                   (str "<tag>v" current-version "</tag>")
+                   (str "<tag>v" (name version) "</tag>"))
+  (replace-in-file "CHANGELOG.md"
+                   #"## Unreleased"
+                   (format "## Unreleased\n\n## %s" (name version)))
+  (replace-in-file "resources/STUB_VERSION"
+                   current-version
+                   (name version))
+  (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/STUB_VERSION"]})
+  (b/process {:command-args ["git" "commit" "-m" (str "\"Release: " (name version) "\"")]})
+  (b/process {:command-args ["git" "tag" (name version)]})
+  (b/process {:command-args ["git" "push" "origin" "HEAD"]})
+  (b/process {:command-args ["git" "push" "origin" "HEAD" "--tags"]}))
+
+(defn deploy-clojars [opts]
   (jar opts)
   ((requiring-resolve 'deps-deploy.deps-deploy/deploy)
    (merge {:installer :remote
