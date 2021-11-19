@@ -172,7 +172,7 @@ jobs:
         run: |
           iwr -useb download.clojure.org/install/win-install-1.10.3.1013.ps1 | iex
 
-     - name: Install MSVC
+      - name: Install MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install GraalVM
