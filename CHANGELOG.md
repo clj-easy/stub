@@ -3,4 +3,6 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## 0.1.0
+
 - First release: add support for generating stubs.
