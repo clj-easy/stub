@@ -56,7 +56,7 @@ GraalVM native image
 
 To tag and deploy to clojars + generate the native image on releases:
 
-`clj -T:build tag :version :1.3.4`
+`clj -T:build tag :version '"1.3.4"'`
 
 ## License
 
