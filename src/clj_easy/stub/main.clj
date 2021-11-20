@@ -44,8 +44,7 @@
 
    ["-o" "--output-dir DIR" "The directory to spit out the generated stubs."
     :id :output-dir
-    :parse-fn io/file
-    :validate [#(-> % io/file .exists) "Specify a valid directory path after --output-dir"]]])
+    :parse-fn io/file]])
 
 (defn ^:private error-msg [errors]
   (str "The following errors occurred while parsing your command:\n\n"

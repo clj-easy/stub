@@ -86,6 +86,9 @@
          (string? classpath)
          (string? java-command)
          (seq namespaces)]}
+  (io/make-parents output-dir)
+  (when-not (.exists ^File output-dir)
+    (.mkdirs ^File output-dir))
   (let [script-tmp-file ^File (create-script-tmp-file!)
         {:keys [out err exit]} (apply sh
                                       java-command "-cp" classpath
