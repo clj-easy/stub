@@ -11,7 +11,7 @@ TODO
 
 ## Usage
 
-To generate stubs you need to pass the `classpath` and at least one namespace from `namespaces` to `stub` later require it and find all related namespaces for stub generation.
+To generate stubs you need to pass the `classpath` and at least one namespace from `namespaces` to `stub` later require it and generate the stubs for those namespaces.
 You can specify a optional `output-dir`, otherwise the `stubs` folder will be used.
 For more details check `stub --help`.
 
@@ -26,7 +26,7 @@ After running successfully, a hierarchy of files and folders with all the stubs 
 
 ### CLI
 
-`stub --classpath ".../clojure.jar:/foo/bar.jar" --namespaces foo.bar`
+`stub --classpath ".../clojure.jar:/foo/bar.jar" --namespaces foo.bar --namespaces foo.baz`
 
 `stub -c ".../clojure.jar:/foo/bar.jar" -n foo.bar -o /tmp/stubs`
 
@@ -36,7 +36,7 @@ For now the only entrypoint available is `clj-easy.stub.core/generate!`.
 
 ## How does it work
 
-This tool first create a temporary file with a custom clojure code, then shell out a java process with the specified classpath calling the code from the created temporary file which should get all necessary metadata and then finish, which stub should then create all files from that metadata.
+This tool first create a temporary file with a custom clojure code, then shell out a java process with the specified classpath calling the code from the created temporary file which should get all necessary metadata and then finish, then stub should create all files from that metadata.
 
 ## Develop
 
