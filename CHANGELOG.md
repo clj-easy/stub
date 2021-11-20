@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+- Fix incorrectly unescaped generated doc strings.
+
 ## 0.1.0
 
 - First release: add support for generating stubs.

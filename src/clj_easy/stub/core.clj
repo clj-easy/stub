@@ -33,7 +33,7 @@
                    (string/replace "-" "_")
                    (str "." file-ext))
      :declaration (str "(" definition-macro (str " ^" metadata) " " name
-                       (if doc (str " \"" doc "\"") "")
+                       (if doc (str " \"" (string/escape doc {\" "\\\""}) "\"") "")
                        (if arglists
                          (->> arglists
                               (map #(str "(" % ")"))
