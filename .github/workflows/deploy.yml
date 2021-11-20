@@ -2,12 +2,12 @@ name: Deploy
 
 on:
   push:
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v*'
 
 jobs:
   build-jvm:
-    # if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     name: Build JVM jar
     runs-on: ubuntu-latest
     steps:
@@ -65,9 +65,7 @@ jobs:
         env:
           STUB_JAR: stub.jar
           STUB_XMX: "-J-Xmx6g"
-        run: |
-          ls -la
-          clojure -T:build native
+        run: clojure -T:build native
 
       - name: Zip binary
         run: zip stub-native-linux-amd64.zip stub
@@ -205,22 +203,21 @@ jobs:
           path: stub-native-windows-amd64.zip
           name: stub-native-windows-amd64.zip
 
-  # deploy-clojars:
-  #   needs: [build-jvm, linux-amd64, linux-amd64-static, macos, windows]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  deploy-clojars:
+    needs: [build-jvm, linux-amd64, linux-amd64-static, macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - uses: jlesquembre/clojars-publish-action@0.4
-  #       env:
-  #         USE_GIT_REF: false
-  #         CLOJARS_USERNAME: borkdude
-  #         CLOJARS_PASSWORD: ${{ secrets.CLOJARS_ORG_TOKEN }}
+      - uses: jlesquembre/clojars-publish-action@0.4
+        env:
+          USE_GIT_REF: false
+          CLOJARS_USERNAME: borkdude
+          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_ORG_TOKEN }}
 
   release:
     name: Create Release
-    # needs: [deploy-clojars]
-    needs: [build-jvm, linux-amd64, linux-amd64-static, macos, windows]
+    needs: [deploy-clojars]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
