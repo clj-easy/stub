@@ -192,7 +192,8 @@ jobs:
         env:
           STUB_JAR: stub.jar
           STUB_XMX: "-J-Xmx7g"
-        run: clojure -T:build native
+        run: |
+          .\graalvm\native-windows-compile.bat
 
       - name: Zip binary
         run: |
