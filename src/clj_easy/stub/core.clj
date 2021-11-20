@@ -70,9 +70,10 @@
     script-tmp-file))
 
 (defn generate!
-  "Generate stubs for the given `classpath`, requiring `namespaces`
-  and saving the namespaces hierarchy into `output-dir`.
-  This function spawns a clojure program using the provided or default `java-command`.
+  "Generate stubs for the given `classpath` string, requiring `namespaces`, a
+  list of strings, and saving the namespaces hierarchy into `output-dir`.
+  This function spawns a clojure program using the provided or default
+  `java-command`.
   If `dry?` is truthy, return the stubs on the result map without creating the file hierarchy.
 
   Return a map with:
