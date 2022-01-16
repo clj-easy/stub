@@ -29,7 +29,7 @@
 (defn uber [opts]
   (clean nil)
   (let [default-aliases [:cli]]
-    (b/copy-dir {:src-dirs ["src/lib" "src/cli" "resources/cli"]
+    (b/copy-dir {:src-dirs ["src/lib" "src/cli" "resources"]
                  :target-dir class-dir})
     (b/compile-clj {:basis (b/create-basis (update basis :aliases concat default-aliases (:extra-aliases opts)))
                     :src-dirs ["src/lib" "src/cli"]
@@ -77,10 +77,10 @@
   (replace-in-file "CHANGELOG.md"
                    #"## Unreleased"
                    (format "## Unreleased\n\n## %s" (name version)))
-  (replace-in-file "resources/lib/STUB_VERSION"
+  (replace-in-file "resources/STUB_VERSION"
                    current-version
                    version)
-  (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/lib/STUB_VERSION"]})
+  (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/STUB_VERSION"]})
   (b/process {:command-args ["git" "commit" "-m" (str "\"Release: " version "\"")]})
   (b/process {:command-args ["git" "tag" (str "v" version)]})
   (b/process {:command-args ["git" "push" "origin" "HEAD"]})

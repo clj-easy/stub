@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+- Fix resources not being included for native image
+
 ## 0.2.2
 
 - Upload both standalone and normal jar

@@ -1,19 +1,19 @@
-{:paths ["src/lib" "resources/lib"]
+{:paths ["src/lib" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}}
  :aliases
- {:dev {:extra-paths ["src/cli" "resources/cli"]}
+ {:dev {:extra-paths ["src/cli"]}
   :run
   {:main-opts ["-m" "clj-easy.stub.main"]}
 
   :test
-  {:extra-paths ["test" "src/cli" "resources/cli"]
+  {:extra-paths ["test" "src/cli"]
    :extra-deps {io.github.cognitect-labs/test-runner
                 {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
    :main-opts ["-m" "cognitect.test-runner"]
    :exec-fn cognitect.test-runner.api/test}
 
   :build
-  {:extra-paths ["resources/lib"]
+  {:extra-paths ["resources"]
    :deps {io.github.clojure/tools.build {:tag "v0.5.1" :sha "21da7d4"}
           slipset/deps-deploy {:mvn/version "0.2.0"}}
    :ns-default build}
@@ -23,7 +23,7 @@
    :main-opts ["-m" "clojure-lsp.main"]}
 
   :cli
-  {:extra-paths ["src/cli" "resources/cli"]
+  {:extra-paths ["src/cli"]
    :extra-deps {org.clojure/tools.cli {:mvn/version "1.0.206"}}}
 
   :native
