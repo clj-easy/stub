@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.clj-easy</groupId>
   <artifactId>stub</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <name>clj-easy/stub</name>
   <description>Library to generate stubs for other Clojure libraries.</description>
   <url>https://github.com/clj-easy/stub</url>
@@ -22,7 +22,7 @@
     <url>https://github.com/clj-easy/stub</url>
     <connection>scm:git:git://github.com/clj-easy/stub.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/clj-easy/stub.git</developerConnection>
-    <tag>v0.2.1</tag>
+    <tag>v0.2.2</tag>
   </scm>
   <dependencies>
     <dependency>
