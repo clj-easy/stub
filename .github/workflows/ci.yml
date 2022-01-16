@@ -7,7 +7,7 @@ on:
     paths-ignore:
       - '**/README.md'
       - '**/CHANGELOG.md'
-      - 'resources/STUB_VERSION'
+      - 'resources/cli/STUB_VERSION'
       - 'docs/**'
   pull_request:
 
