@@ -3,8 +3,6 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
-## 0.2.2
-
 - Upload both standalone and normal jar
 
 ## 0.2.1
