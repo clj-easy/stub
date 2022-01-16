@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file. This change
 
 ## 0.2.1
 
-## 0.2.0
-
 - Remove tools.cli deps from jar
 
 ## 0.1.1
