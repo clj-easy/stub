@@ -28,14 +28,25 @@ jobs:
 
       - name: Generate uberjar
         run: |
-          clojure -T:build uber
-          mv target/stub-*-standalone.jar stub.jar
+          clojure -T:build jar
+          mv target/stub-*.jar stub.jar
 
       - name: Upload jar
         uses: actions/upload-artifact@v2
         with:
           path: stub.jar
           name: stub.jar
+
+      - name: Generate uberjar
+        run: |
+          clojure -T:build uber
+          mv target/stub-*-standalone.jar stub-standalone.jar
+
+      - name: Upload standalone jar
+        uses: actions/upload-artifact@v2
+        with:
+          path: stub-standalone.jar
+          name: stub-standalone.jar
 
   linux-amd64:
     name: Build native linux amd64 binary
