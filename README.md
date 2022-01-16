@@ -44,9 +44,13 @@ Run `clj -M:run generate --classpath "<your-classpath>" --namespaces some.entryp
 
 ## Build
 
-JVM
+JVM cli
 
 `clj -T:build uber`
+
+JVM api
+
+`clj -T:build jar`
 
 GraalVM native image
 

@@ -5,7 +5,7 @@
    [clojure.tools.build.api :as b]))
 
 (def lib 'clj-easy/stub)
-(def current-version (string/trim (slurp (io/resource "STUB_VERSION"))))
+(def current-version (string/trim (slurp (io/resource "cli/STUB_VERSION"))))
 (def class-dir "target/classes")
 (def basis {:project "deps.edn"})
 (def uber-file (format "target/%s-%s-standalone.jar" (name lib) current-version))
@@ -15,27 +15,29 @@
   (b/delete {:path "target"}))
 
 (defn jar [opts]
+  (clean nil)
   (b/write-pom {:class-dir class-dir
                 :lib lib
                 :version current-version
                 :basis (b/create-basis (update basis :aliases concat (:extra-aliases opts)))
-                :src-dirs ["src"]})
-  (b/copy-dir {:src-dirs ["src" "resources"]
+                :src-dirs ["src/lib"]})
+  (b/copy-dir {:src-dirs ["src/lib"]
                :target-dir class-dir})
   (b/jar {:class-dir class-dir
           :jar-file jar-file}))
 
 (defn uber [opts]
   (clean nil)
-  (b/copy-dir {:src-dirs ["src" "resources"]
-               :target-dir class-dir})
-  (b/compile-clj {:basis (b/create-basis (update basis :aliases concat (:extra-aliases opts)))
-                  :src-dirs ["src"]
-                  :class-dir class-dir})
-  (b/uber {:class-dir class-dir
-           :uber-file uber-file
-           :main 'clj-easy.stub.main
-           :basis (b/create-basis (update basis :aliases concat (:extra-aliases opts)))}))
+  (let [default-aliases [:cli]]
+    (b/copy-dir {:src-dirs ["src/lib" "src/cli" "resources/cli"]
+                 :target-dir class-dir})
+    (b/compile-clj {:basis (b/create-basis (update basis :aliases concat default-aliases (:extra-aliases opts)))
+                    :src-dirs ["src/lib" "src/cli"]
+                    :class-dir class-dir})
+    (b/uber {:class-dir class-dir
+             :uber-file uber-file
+             :main 'clj-easy.stub.main
+             :basis (b/create-basis (update basis :aliases concat default-aliases (:extra-aliases opts)))})))
 
 (defn native [opts]
   (if-let [graal-home (System/getenv "GRAALVM_HOME")]

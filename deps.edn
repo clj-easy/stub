@@ -1,12 +1,12 @@
-{:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}
-        org.clojure/tools.cli {:mvn/version "1.0.206"}}
+{:paths ["src/lib"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.3"}}
  :aliases
- {:run
+ {:dev {:extra-paths ["src/cli" "resources/cli"]}
+  :run
   {:main-opts ["-m" "clj-easy.stub.main"]}
 
   :test
-  {:extra-paths ["test"]
+  {:extra-paths ["test" "src/cli"]
    :extra-deps {io.github.cognitect-labs/test-runner
                 {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
    :main-opts ["-m" "cognitect.test-runner"]
@@ -21,6 +21,10 @@
   :clojure-lsp
   {:replace-deps {com.github.clojure-lsp/clojure-lsp {:mvn/version "2021.11.16-16.52.14"}}
    :main-opts ["-m" "clojure-lsp.main"]}
+
+  :cli
+  {:extra-paths ["src/cli" "resources/cli"]
+   :extra-deps {org.clojure/tools.cli {:mvn/version "1.0.206"}}}
 
   :native
   {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
