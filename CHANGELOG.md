@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+- Upload both standalone and normal jar
+
 ## 0.2.1
 
 - Remove tools.cli deps from jar
