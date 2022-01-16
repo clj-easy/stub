@@ -5,7 +5,7 @@
    [clojure.tools.build.api :as b]))
 
 (def lib 'clj-easy/stub)
-(def current-version (string/trim (slurp (io/resource "cli/STUB_VERSION"))))
+(def current-version (string/trim (slurp (io/resource "STUB_VERSION"))))
 (def class-dir "target/classes")
 (def basis {:project "deps.edn"})
 (def uber-file (format "target/%s-%s-standalone.jar" (name lib) current-version))
@@ -77,10 +77,10 @@
   (replace-in-file "CHANGELOG.md"
                    #"## Unreleased"
                    (format "## Unreleased\n\n## %s" (name version)))
-  (replace-in-file "resources/STUB_VERSION"
+  (replace-in-file "resources/lib/STUB_VERSION"
                    current-version
                    version)
-  (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/STUB_VERSION"]})
+  (b/process {:command-args ["git" "add" "pom.xml" "CHANGELOG.md" "resources/lib/STUB_VERSION"]})
   (b/process {:command-args ["git" "commit" "-m" (str "\"Release: " version "\"")]})
   (b/process {:command-args ["git" "tag" (str "v" version)]})
   (b/process {:command-args ["git" "push" "origin" "HEAD"]})

@@ -1,4 +1,4 @@
-{:paths ["src/lib"]
+{:paths ["src/lib" "resources/lib"]
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}}
  :aliases
  {:dev {:extra-paths ["src/cli" "resources/cli"]}
@@ -13,8 +13,7 @@
    :exec-fn cognitect.test-runner.api/test}
 
   :build
-  {:extra-paths ["resources"]
-   :deps {io.github.clojure/tools.build {:tag "v0.5.1" :sha "21da7d4"}
+  {:deps {io.github.clojure/tools.build {:tag "v0.5.1" :sha "21da7d4"}
           slipset/deps-deploy {:mvn/version "0.2.0"}}
    :ns-default build}
 
